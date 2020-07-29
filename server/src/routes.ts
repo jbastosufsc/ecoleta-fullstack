@@ -8,12 +8,60 @@ routes.get('/items', async (request, response) => {
 
   const serializedItems = items.map((item) => {
     return {
+      id: item.id,
       title: item.title,
       image_url: `http://localhost:3333/uploads/${item.image}`,
     };
   });
 
   return response.json(serializedItems);
+});
+
+routes.get('/points', async (request, response) => {
+  const points = await knex('points').select('*');
+  return response.json(points);
+});
+
+routes.get('/point_items', async (request, response) => {
+  const point_items = await knex('point_items').select('*');
+  return response.json(point_items);
+});
+
+routes.post('/points', async (request, response) => {
+  const {
+    name,
+    email,
+    whatsapp,
+    city,
+    uf,
+    latitude,
+    longitude,
+    items,
+  } = request.body;
+
+  const trx = await knex.transaction();
+
+  const pointId = await trx('points').insert({
+    image: 'image-fake',
+    name,
+    email,
+    whatsapp,
+    city,
+    uf,
+    latitude,
+    longitude,
+  });
+
+  const pointItems = items.map((item_id: number) => {
+    return {
+      item_id,
+      point_id: pointId[0],
+    };
+  });
+
+  await trx('point_items').insert(pointItems);
+
+  return response.json({ sucess: true });
 });
 
 export default routes;
