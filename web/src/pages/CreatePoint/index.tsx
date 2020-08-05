@@ -1,5 +1,5 @@
 import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import logo from '../../assets/logo.svg';
 import { Map, TileLayer, Marker } from 'react-leaflet';
@@ -48,6 +48,8 @@ const CreatePoint: React.FC = () => {
   });
 
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+
+  const history = useHistory();
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -138,6 +140,8 @@ const CreatePoint: React.FC = () => {
     await api.post('points', data);
 
     alert('Ponto de coleta cadastrado com sucesso!');
+
+    history.push('/');
   }
 
   return (
